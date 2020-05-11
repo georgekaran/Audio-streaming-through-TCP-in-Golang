@@ -8,11 +8,12 @@ import (
 )
 
 const sampleRate = 44100
-const seconds = 2
+const seconds = 0.1
 
 func main() {
 	portaudio.Initialize()
 	defer portaudio.Terminate()
+
 	buffer := make([]float32, sampleRate * seconds)
 	stream, err := portaudio.OpenDefaultStream(1, 0, sampleRate, len(buffer), func(in []float32) {
 		for i := range buffer {
