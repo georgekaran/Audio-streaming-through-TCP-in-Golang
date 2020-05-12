@@ -7,11 +7,13 @@ import (
 	"github.com/gordonklaus/portaudio"
 	"io/ioutil"
 	"net"
+	"os"
+	"os/exec"
 	"time"
 )
 
-const sampleRate = 44100
-const seconds = 0.1
+const sampleRate = 88200
+const seconds = 0.06
 
 func main() {
 	portaudio.Initialize()
@@ -19,10 +21,12 @@ func main() {
 	buffer := make([]float32, sampleRate * seconds)
 
 	stream, err := portaudio.OpenDefaultStream(0, 1, sampleRate, len(buffer), func(out []float32) {
-		go readFromServer(out, buffer)
+		readFromServer(out, buffer)
 	})
 	must(err)
 	must(stream.Start())
+
+	clearTerminal()
 
 	for {
 		time.Sleep(time.Millisecond)
@@ -49,6 +53,12 @@ func dialServer() net.Conn {
 		time.Sleep(time.Second)
 	}
 	return conn
+}
+
+func clearTerminal() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
 
 func must(err error) {
